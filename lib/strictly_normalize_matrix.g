@@ -251,13 +251,8 @@ normalize_matrix := function (A)
    while not NZC = [] do
      
      Bi := normalize_column(CertainColumns(A, [NZC[1]]));
-     #Display("Bi");
-     #Display(Bi);
-     #Be := matrix_expand(Bi, NrRows(A), i, i);
-     Be := DiagMat([HomalgIdentityMatrix(i - 1, K), Bi]);
 
-     #Display("Be");
-     #Display(Be);
+     Be := DiagMat([HomalgIdentityMatrix(i - 1, K), Bi]);
 
      A := Bi * A;
      U := Be * U;
@@ -284,16 +279,16 @@ strictly_normalize_matrix := function (A)
   if NrRows(A) = 0 then 
     return A;
   fi;
-
+  Display("A");
+  Display(A);
   SF := normalize_matrix(A);
-
+  
   A := SF * A;
+  Display("Asf");
+  Display(A);
 
   i := 1;
   j := 2;
-
-  #Display("Asf");
-  #Display(A);
 
   while i < NrRows(A) and i < j do
     j := NrRows(A) - i + 1;
@@ -304,14 +299,26 @@ strictly_normalize_matrix := function (A)
     i := i + 1;
   od;
 
-  #Display("Aswapped");
-  #Display(A);
+  Display("Aswapped");
+  Display(A);
   SFF := normalize_matrix(A);
-  #Display("SFF");
-  #Display(SFF);
+  Display("SFF");
+  Display(SFF);
 
-  #Display("SFF * Aswapped");
-  #Display(SFF * A);
+  Display("SFF * A");
+  Display(SFF * A);
+
+  i := 1;
+  j := 2;
+
+  while i < NrRows(A) and i < j do
+    j := NrRows(A) - i + 1;
+
+    SFF := vermat(NrRows(A), i, j, K) * SFF;
+    A  := vermat(NrRows(A), i, j, K) * A;
+
+    i := i + 1;
+  od;
 
   return SF;
 end;
