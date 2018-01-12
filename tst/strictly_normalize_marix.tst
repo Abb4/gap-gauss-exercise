@@ -1,4 +1,4 @@
-gap> START_TEST( "tests for gauss matrix normalisation" );
+gap> START_TEST( "tests for gauss matrix normalisation (reduced row echelon form)" );
 
 #setup
 gap> ZZ := HomalgRingOfIntegers( );

@@ -1,4 +1,4 @@
-gap> START_TEST( "tests for gauss matrix normalisation" );
+gap> START_TEST( "tests for gauss matrix normalisation (row echelon form)" );
 
 #setup
 gap> ZZ := HomalgRingOfIntegers( );
@@ -40,8 +40,8 @@ gap> A2 := HomalgMatrix( [0, 2, 2, 3], 2, 2, QQ);
 gap> normalize_matrix(A2);
 <An unevaluated 2 x 2 matrix over an internal ring>
 gap> Display(last*A2);
-[ [  1,  3/2 ],
-  [  0,    1 ] ]
+[ [    1,  3/2 ],
+  [    0,    1 ] ]
 
 #
 gap> STOP_TEST( "strictly_normalize_marix.tst", 10000 );
