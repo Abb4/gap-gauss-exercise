@@ -323,15 +323,15 @@ end;
 
 
 normalize_matrix := function (A)
-   local i, j, B, c, s, si, Bi, Be, K, U, NZC; 
+   local i, Bi, Be, U, NZC; 
 
-   K := HomalgRing( A );
+   R := HomalgRing( A );
 
-   U := HomalgInitialIdentityMatrix(NrRows(A), K);
+   U := HomalgInitialIdentityMatrix(NrRows(A), R);
 
-   if NrRows(A) = 0 then 
-      return A;
-   fi;
+   if NrRows(A) = 0 or NrColumns(A) = 0 then 
+    return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
+  fi;
 
    NZC := NonZeroColumns(A);
    i := 1;
@@ -342,7 +342,7 @@ normalize_matrix := function (A)
      #Display("Bi");
      #Display(Bi);
      #Be := matrix_expand(Bi, NrRows(A), i, i);
-     Be := DiagMat([HomalgIdentityMatrix(i - 1, K), Bi]);
+     Be := DiagMat([HomalgIdentityMatrix(i - 1, R), Bi]);
 
      #Display("Be");
      #Display(Be);
@@ -356,7 +356,8 @@ normalize_matrix := function (A)
      
      i := i + 1;
    od;
-
+   
+   MakeImmutable(U);
    return U;
 end;
 
