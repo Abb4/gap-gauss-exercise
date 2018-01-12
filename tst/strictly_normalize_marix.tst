@@ -33,7 +33,6 @@ gap> strictly_normalize_matrix(A);
 gap> Display(last*A);
 (an empty 0 x 1 matrix)
 
-
 # Q 1x1 matrix
 gap> A := HomalgMatrix([-1], 1, 1, QQ);
 <A 1 x 1 matrix over an internal ring>
