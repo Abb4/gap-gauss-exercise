@@ -235,15 +235,15 @@ end;
 #------------------------------------------------------------------------------
 
 normalize_matrix := function (A)
-   local i, j, B, c, s, si, Bi, Be, K, U, NZC; 
+   local i, Bi, Be, U, NZC, R; 
 
-   K := HomalgRing( A );
+   R := HomalgRing( A );
 
-   U := HomalgInitialIdentityMatrix(NrRows(A), K);
+   U := HomalgInitialIdentityMatrix(NrRows(A), R);
 
-   if NrRows(A) = 0 then 
-      return A;
-   fi;
+   if NrRows(A) = 0 or NrColumns(A) = 0 then 
+    return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
+  fi;
 
    NZC := NonZeroColumns(A);
    i := 1;
@@ -251,8 +251,13 @@ normalize_matrix := function (A)
    while not NZC = [] do
      
      Bi := normalize_column(CertainColumns(A, [NZC[1]]));
+     #Display("Bi");
+     #Display(Bi);
+     #Be := matrix_expand(Bi, NrRows(A), i, i);
+     Be := DiagMat([HomalgIdentityMatrix(i - 1, R), Bi]);
 
-     Be := DiagMat([HomalgIdentityMatrix(i - 1, K), Bi]);
+     #Display("Be");
+     #Display(Be);
 
      A := Bi * A;
      U := Be * U;
@@ -263,64 +268,57 @@ normalize_matrix := function (A)
      
      i := i + 1;
    od;
-
+   
+   MakeImmutable(U);
    return U;
 end;
 
 #--------------------------------------------------------------------------------------------
 
 strictly_normalize_matrix := function (A)
-  local i, j, B, c, s, si, Bi, Be, K, U, NZC, SF, SFF; 
+  local i, j, B, c, s, si, Bi, Be, NZC, SF, SSF, Aorig; 
 
-  K := HomalgRing( A );
+  Aorig := A;
 
-  U := HomalgInitialIdentityMatrix(NrRows(A), K);
-
-  if NrRows(A) = 0 then 
-    return A;
+  if NrRows(A) = 0 or NrColumns(A) = 0 then 
+    return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
   fi;
-  Display("A");
-  Display(A);
+
+  #Display("A");
+  #Display(A);
   SF := normalize_matrix(A);
   
+  #Display("SF");
+  #Display(SF);
+
   A := SF * A;
-  Display("Asf");
-  Display(A);
+  #Display("SF * A");
+  #Display(A);
 
-  i := 1;
-  j := 2;
+  A := Involution(A);
+  SSF := normalize_matrix(A);
+  #Display("Ainvoluted");
+  #Display(A);
+  #Display("SSF(Ainvoluted)");
+  #Display(SSF);
 
-  while i < NrRows(A) and i < j do
-    j := NrRows(A) - i + 1;
+  #Display("SSF(Ainvolued) * A(involuted)");
+  #Display(SSF * A);
 
-    SF := vermat(NrRows(A), i, j, K) * SF;
-    A  := vermat(NrRows(A), i, j, K) * A;
+  #Display("SSF(Ainvolued)Involuted * A");
+  #Display(Involution(SSF) * Involution(A));
 
-    i := i + 1;
-  od;
+  #Display("SSF(Ainvolued)Involuted * SF");
+  SSF := Involution(SSF) * SF;
+  #Display(SSF);
 
-  Display("Aswapped");
-  Display(A);
-  SFF := normalize_matrix(A);
-  Display("SFF");
-  Display(SFF);
+  #Display("Aorig");
+  #Display(Aorig);
 
-  Display("SFF * A");
-  Display(SFF * A);
+  #Display("SF * SSF(Ainvolued)Involuted * Aorig");
+  #Display(SSF * Aorig);
 
-  i := 1;
-  j := 2;
-
-  while i < NrRows(A) and i < j do
-    j := NrRows(A) - i + 1;
-
-    SFF := vermat(NrRows(A), i, j, K) * SFF;
-    A  := vermat(NrRows(A), i, j, K) * A;
-
-    i := i + 1;
-  od;
-
-  return SF;
+  return SSF;
 end;
 
 

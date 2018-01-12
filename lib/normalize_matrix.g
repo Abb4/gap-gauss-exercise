@@ -323,7 +323,7 @@ end;
 
 
 normalize_matrix := function (A)
-   local i, Bi, Be, U, NZC; 
+   local i, Bi, Be, U, NZC, R; 
 
    R := HomalgRing( A );
 

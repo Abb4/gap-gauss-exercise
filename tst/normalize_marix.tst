@@ -21,7 +21,7 @@ gap> Display(last*A);
 gap> A := HomalgMatrix([], 1, 0, QQ);
 <An unevaluated 1 x 0 zero matrix over an internal ring>
 gap> normalize_matrix(A);
-<An initial identity 1 x 1 matrix over an internal ring>
+<An unevaluated 1 x 1 identity matrix over an internal ring>
 gap> Display(last*A);
 (an empty 1 x 0 matrix)
 
