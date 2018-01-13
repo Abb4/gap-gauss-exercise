@@ -1,4 +1,4 @@
-LoadPackage( "RingsForHomalg" );
+LoadPackage( "RingsForHomalg" );;
 
 ZZ := HomalgRingOfIntegers( );
 QQ := HomalgFieldOfRationals( );
