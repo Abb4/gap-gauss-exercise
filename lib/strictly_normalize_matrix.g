@@ -1,4 +1,4 @@
-LoadPackage( "RingsForHomalg" );
+LoadPackage( "RingsForHomalg" );;
 
 ZZ := HomalgRingOfIntegers( );
 QQ := HomalgFieldOfRationals( );
@@ -235,90 +235,60 @@ end;
 #------------------------------------------------------------------------------
 
 normalize_matrix := function (A)
-   local i, Bi, Be, U, NZC, R; 
+  local Bi, PartialMatI, U, NZC, R; 
 
-   R := HomalgRing( A );
+  R := HomalgRing(A);
+  NZC := NonZeroColumns(A);
+  
+  if NZC = [] then
+    return HomalgIdentityMatrix(NrRows(A), R);
+  else
+    Bi := normalize_column(CertainColumns(A, [NZC[1]]));
+    
+    # new matrix
+    A := Bi * A;
+    # cut away top row
+    A := CertainRows(A,[2..NrRows(A)]);
+    
+    # normalize patrial matrix
+    PartialMatI := normalize_matrix(CertainColumns(A,NZC));
+    # expand to original size
+    PartialMatI := DiagMat([HomalgIdentityMatrix(1, R), PartialMatI]);
 
-   U := HomalgInitialIdentityMatrix(NrRows(A), R);
-
-   if NrRows(A) = 0 or NrColumns(A) = 0 then 
-    return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
+    return PartialMatI * Bi;
   fi;
-
-   NZC := NonZeroColumns(A);
-   i := 1;
-
-   while not NZC = [] do
-     
-     Bi := normalize_column(CertainColumns(A, [NZC[1]]));
-     #Display("Bi");
-     #Display(Bi);
-     #Be := matrix_expand(Bi, NrRows(A), i, i);
-     Be := DiagMat([HomalgIdentityMatrix(i - 1, R), Bi]);
-
-     #Display("Be");
-     #Display(Be);
-
-     A := Bi * A;
-     U := Be * U;
-     
-     A := CertainRows(A,[2..NrRows(A)]);
-   
-     NZC := NonZeroColumns(A);
-     
-     i := i + 1;
-   od;
-   
-   MakeImmutable(U);
-   return U;
 end;
 
 #--------------------------------------------------------------------------------------------
 
 strictly_normalize_matrix := function (A)
-  local i, j, B, c, s, si, Bi, Be, NZC, SF, SSF, Aorig; 
+  local NZC, nr, nc, SF, SSF;
 
-  Aorig := A;
+  nr := NrRows(A);
+  nc := NrColumns(A);
 
-  if NrRows(A) = 0 or NrColumns(A) = 0 then 
-    return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
+  SF := normalize_matrix(A);
+
+  if nr = 1 or nc = 1 then
+    return SF;
   fi;
 
-  #Display("A");
-  #Display(A);
-  SF := normalize_matrix(A);
-  
-  #Display("SF");
-  #Display(SF);
-
   A := SF * A;
-  #Display("SF * A");
-  #Display(A);
 
+  if nr < nc then
+    NZC := NonZeroColumns(A);
+
+    A := CertainColumns(A, NZC{[1..Minimum(Length(NZC),nr)]});
+  fi;
+  
   A := Involution(A);
   SSF := normalize_matrix(A);
-  #Display("Ainvoluted");
-  #Display(A);
-  #Display("SSF(Ainvoluted)");
-  #Display(SSF);
 
-  #Display("SSF(Ainvolued) * A(involuted)");
-  #Display(SSF * A);
+  if NrRows(SF) > NrRows(SSF) then
+    SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), HomalgRing(A))]);
+  fi;
 
-  #Display("SSF(Ainvolued)Involuted * A");
-  #Display(Involution(SSF) * Involution(A));
-
-  #Display("SSF(Ainvolued)Involuted * SF");
-  SSF := Involution(SSF) * SF;
-  #Display(SSF);
-
-  #Display("Aorig");
-  #Display(Aorig);
-
-  #Display("SF * SSF(Ainvolued)Involuted * Aorig");
-  #Display(SSF * Aorig);
-
-  return SSF;
+  return Involution(SSF) * SF;
 end;
 
 

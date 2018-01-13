@@ -37,15 +37,23 @@ gap> Display(last*A);
 gap> A := HomalgMatrix([-1], 1, 1, QQ);
 <A 1 x 1 matrix over an internal ring>
 gap> normalize_matrix(A);
-<An unevaluated 1 x 1 matrix over an internal ring>
+<A 1 x 1 matrix over an internal ring>
 gap> Display(last*A);
 [ [  1 ] ]
+
+# Q 1x1 zero matrix
+gap> A := HomalgMatrix([0], 1, 1, QQ);
+<A 1 x 1 matrix over an internal ring>
+gap> normalize_matrix(A);
+<An unevaluated 1 x 1 identity matrix over an internal ring>
+gap> Display(last*A);
+[ [  0 ] ]
 
 # Q 1x3 matrix
 gap> A := HomalgMatrix([2, 3, 5], 1, 3, QQ);
 <A 1 x 3 matrix over an internal ring>
 gap> normalize_matrix(A);
-<An unevaluated 1 x 1 matrix over an internal ring>
+<A 1 x 1 matrix over an internal ring>
 gap> Display(last*A);
 [ [    1,  3/2,  5/2 ] ]
 
@@ -53,7 +61,7 @@ gap> Display(last*A);
 gap> A := HomalgMatrix([2, 3, 5], 3, 1, QQ);
 <A 3 x 1 matrix over an internal ring>
 gap> normalize_matrix(A);
-<An unevaluated 3 x 3 matrix over an internal ring>
+<A 3 x 3 mutable matrix over an internal ring>
 gap> Display(last*A);
 [ [  1 ],
   [  0 ],
@@ -77,6 +85,35 @@ gap> Display(last*A);
 [ [     1,     2,  -8/3 ],
   [     0,     1,    11 ] ]
 
+# Q 2x3 matrix with zero column
+gap> A := HomalgMatrix([[-3, 0, 8], [-6, 0, 5]], 2, 3, QQ);
+<A 2 x 3 matrix over an internal ring>
+gap> normalize_matrix(A);
+<An unevaluated 2 x 2 matrix over an internal ring>
+gap> Display(last*A);
+[ [     1,     0,  -8/3 ],
+  [     0,     0,     1 ] ]
+
+# Q 3x2 matrix
+gap> A := HomalgMatrix([[1, 2], [5, 4], [-8/3, 11]], 3, 2, QQ);
+<A 3 x 2 matrix over an internal ring>
+gap> normalize_matrix(A);
+<An unevaluated 3 x 3 matrix over an internal ring>
+gap> Display(last*A);
+[ [  1,  2 ],
+  [  0,  1 ],
+  [  0,  0 ] ]
+
+# Q 3x2 matrix with zero column
+gap> A := HomalgMatrix([[1, 0], [0, 0], [-8/3, 11]], 3, 2, QQ);
+<A 3 x 2 matrix over an internal ring>
+gap> normalize_matrix(A);
+<An unevaluated 3 x 3 matrix over an internal ring>
+gap> Display(last*A);
+[ [  1,  0 ],
+  [  0,  1 ],
+  [  0,  0 ] ]
+
 # Q 3x3 matrix
 gap> A := HomalgMatrix([[1, 2, 3], [4, 5, 6], [7, 8, 8]], 3, 3, QQ);
 <A 3 x 3 matrix over an internal ring>
@@ -96,6 +133,16 @@ gap> Display(last*A);
 [ [    1,    2,    3,    8 ],
   [    0,    1,    2,    7 ],
   [    0,    0,    1,  -36 ] ]
+
+# Q 3x4 matrix with zero columns
+gap> A := HomalgMatrix([[1, 0, 0, 8], [4, 0, 0, 11], [7, 0, 0, 50]], 3, 4, QQ);
+<A 3 x 4 matrix over an internal ring>
+gap> normalize_matrix(A);
+<An unevaluated 3 x 3 matrix over an internal ring>
+gap> Display(last*A);
+[ [  1,  0,  0,  8 ],
+  [  0,  0,  0,  1 ],
+  [  0,  0,  0,  0 ] ]
 
 #
 gap> STOP_TEST( "normalize_marix.tst", 10000 );
