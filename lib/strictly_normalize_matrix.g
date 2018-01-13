@@ -262,16 +262,7 @@ end;
 #--------------------------------------------------------------------------------------------
 
 strictly_normalize_matrix := function (A)
-  local i, j, B, c, s, si, Bi, Be, NZC, nr, nc, SF, SSF, Aorig, R; 
-
-  Aorig := A;
-
-  #if NrRows(A) = 0 or NrColumns(A) = 0 then 
-  #  return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
-  #fi;
-
-  #Display("A");
-  #Display(A);
+  local NZC, nr, nc, SF, SSF, R;
 
   R := HomalgRing(A);
 
@@ -283,53 +274,23 @@ strictly_normalize_matrix := function (A)
   if nr = 1 or nc = 1 then
     return SF;
   fi;
-  
-  #Display("SF");
-  #Display(SF);
 
   A := SF * A;
 
-  #Display("SF * A");
-  #Display(A);
-
   if nr < nc then
     NZC := NonZeroColumns(A);
-    #Display("NZC");
-    #Display(NZC);
-    #Display("A NZC Squared");
-    #Display(CertainColumns(A, NZC{[1..Minimum(Length(NZC),nr)]}));
+
     A := CertainColumns(A, NZC{[1..Minimum(Length(NZC),nr)]});
-    #Display("Areduced");
-    #Display(A);
   fi;
   
   A := Involution(A);
   SSF := normalize_matrix(A);
-  #Display("Ainvoluted");
-  #Display(A);
-  #Display("SSF(Ainvoluted)");
-  #Display(SSF);
-
-  #Display("SSF(Ainvolued) * A(involuted)");
-  #Display(SSF * A);
-
-  #Display("SSF(Ainvolued)Involuted 2 ");
-  #Display(SSF);
-
-  #Display("SSF(Ainvolued)Involuted * SF");
 
   if NrRows(SF) > NrRows(SSF) then
     SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), R)]);
   fi;
 
   SSF := Involution(SSF) * SF;
-  #Display(SSF);
-
-  #Display("Aorig");
-  #Display(Aorig);
-
-  #Display("SF * SSF(Ainvolued)Involuted * Aorig");
-  #Display(SSF * Aorig);
 
   return SSF;
 end;
