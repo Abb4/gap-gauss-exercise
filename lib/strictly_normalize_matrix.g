@@ -235,42 +235,24 @@ end;
 #------------------------------------------------------------------------------
 
 normalize_matrix := function (A)
-   local i, Bi, Be, U, NZC, R; 
+  local i, Bi, PartialMatI, U, NZC, R; 
 
-   R := HomalgRing( A );
+  R := HomalgRing(A);
+  NZC := NonZeroColumns(A);
+  
+  if NZC = [] then
+    return HomalgIdentityMatrix(NrRows(A), R);
+  else
+    Bi := normalize_column(CertainColumns(A, [NZC[1]]));
 
-   U := HomalgInitialIdentityMatrix(NrRows(A), R);
+    A := Bi * A;
+    A := CertainRows(A,[2..NrRows(A)]);
+    
+    PartialMatI := normalize_matrix(CertainColumns(A,NZC));
+    PartialMatI := DiagMat([HomalgIdentityMatrix(1, R), PartialMatI]);
 
-   if NrRows(A) = 0 or NrColumns(A) = 0 then 
-    return HomalgIdentityMatrix(NrRows(A), HomalgRing(A));
+    return PartialMatI * Bi;
   fi;
-
-   NZC := NonZeroColumns(A);
-   i := 1;
-
-   while not NZC = [] do
-     
-     Bi := normalize_column(CertainColumns(A, [NZC[1]]));
-     #Display("Bi");
-     #Display(Bi);
-     #Be := matrix_expand(Bi, NrRows(A), i, i);
-     Be := DiagMat([HomalgIdentityMatrix(i - 1, R), Bi]);
-
-     #Display("Be");
-     #Display(Be);
-
-     A := Bi * A;
-     U := Be * U;
-     
-     A := CertainRows(A,[2..NrRows(A)]);
-   
-     NZC := NonZeroColumns(A);
-     
-     i := i + 1;
-   od;
-   
-   MakeImmutable(U);
-   return U;
 end;
 
 #--------------------------------------------------------------------------------------------
