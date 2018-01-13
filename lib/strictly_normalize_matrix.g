@@ -262,9 +262,7 @@ end;
 #--------------------------------------------------------------------------------------------
 
 strictly_normalize_matrix := function (A)
-  local NZC, nr, nc, SF, SSF, R;
-
-  R := HomalgRing(A);
+  local NZC, nr, nc, SF, SSF;
 
   nr := NrRows(A);
   nc := NrColumns(A);
@@ -287,12 +285,10 @@ strictly_normalize_matrix := function (A)
   SSF := normalize_matrix(A);
 
   if NrRows(SF) > NrRows(SSF) then
-    SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), R)]);
+    SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), HomalgRing(A))]);
   fi;
 
-  SSF := Involution(SSF) * SF;
-
-  return SSF;
+  return Involution(SSF) * SF;
 end;
 
 
