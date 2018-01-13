@@ -88,7 +88,7 @@ gap> Display(last*A);
 # Q 2x3 matrix with zero column
 gap> A := HomalgMatrix([[-3, 0, 8], [-6, 0, 5]], 2, 2, QQ);
 <A 2 x 2 matrix over an internal ring>
-gap> normalize_matrix(A);
+gap> strictly_normalize_matrix(A);
 <An unevaluated 2 x 2 matrix over an internal ring>
 gap> Display(last*A);
 [ [     1,     0,   0 ],
@@ -103,7 +103,6 @@ gap> Display(last*A);
 [ [  1,  0,  0 ],
   [  0,  1,  0 ],
   [  0,  0,  1 ] ]
-
 
 # Q 3x4 matrix with zero columns
 gap> A := HomalgMatrix([[1, 0, 0, 8], [4, 0, 0, 11], [7, 0, 0, 50]], 3, 4, QQ);
