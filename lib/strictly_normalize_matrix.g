@@ -235,7 +235,7 @@ end;
 #------------------------------------------------------------------------------
 
 normalize_matrix := function (A)
-  local i, Bi, PartialMatI, U, NZC, R; 
+  local Bi, PartialMatI, U, NZC, R; 
 
   R := HomalgRing(A);
   NZC := NonZeroColumns(A);
@@ -244,11 +244,15 @@ normalize_matrix := function (A)
     return HomalgIdentityMatrix(NrRows(A), R);
   else
     Bi := normalize_column(CertainColumns(A, [NZC[1]]));
-
+    
+    # new matrix
     A := Bi * A;
+    # cut away top row
     A := CertainRows(A,[2..NrRows(A)]);
     
+    # normalize patrial matrix
     PartialMatI := normalize_matrix(CertainColumns(A,NZC));
+    # expand to original size
     PartialMatI := DiagMat([HomalgIdentityMatrix(1, R), PartialMatI]);
 
     return PartialMatI * Bi;
