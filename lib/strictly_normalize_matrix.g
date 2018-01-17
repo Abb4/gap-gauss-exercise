@@ -199,7 +199,35 @@ normalize_column_Z := function (A)
       a := MatElm(matai, 1, 1);
 
       SetMatElm(U, 1, i+1, MatElm(matai, 1, 2));
+strictly_normalize_matrix := function (A)
+  local NZC, nr, nc, SF, SSF;
 
+  nr := NrRows(A);
+  nc := NrColumns(A);
+
+  SF := normalize_matrix(A);
+
+  if nr = 1 or nc = 1 then
+    return SF;
+  fi;
+
+  A := SF * A;
+
+  if nr < nc then
+    NZC := NonZeroColumns(A);
+
+    A := CertainColumns(A, NZC{[1..Minimum(Length(NZC),nr)]});
+  fi;
+  
+  A := Involution(A);
+  SSF := normalize_matrix(A);
+
+  if NrRows(SF) > NrRows(SSF) then
+    SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), HomalgRing(A))]);
+  fi;
+
+  return Involution(SSF) * SF;
+end;
       if i = 1 then 
         SetMatElm(U, 1, 1, MatElm(matai, 1, 1));
       fi;
@@ -261,7 +289,7 @@ end;
 
 #--------------------------------------------------------------------------------------------
 
-strictly_normalize_matrix := function (A)
+strictly_normalize_matrix_qq := function (A)
   local NZC, nr, nc, SF, SSF;
 
   nr := NrRows(A);
@@ -290,6 +318,25 @@ strictly_normalize_matrix := function (A)
 
   return Involution(SSF) * SF;
 end;
+
+#--------------------------------------------------------------------------------------------
+
+strictly_normalize_matrix_zz := function (A)
+  local NZC, nr, nc, SF, SSF;
+
+  nr := NrRows(A);
+  nc := NrColumns(A);
+
+  SF := normalize_matrix(A);
+
+  A := SF * A;
+
+  NZC := NonZeroColumns(A);
+
+  return fail;
+end;
+
+
 
 
 HomalgRandomMatrix := function(r,c,R)
