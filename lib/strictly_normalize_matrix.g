@@ -1,4 +1,4 @@
-LoadPackage( "RingsForHomalg" );;
+LoadPackage( "RingsForHomalg" );
 
 ZZ := HomalgRingOfIntegers( );
 QQ := HomalgFieldOfRationals( );
@@ -9,6 +9,16 @@ end;
 
 addmat := function(a, k)
   return HomalgMatrix([1, 0, -a, 1], 2, 2, k);
+end;
+
+addmatn := function(a, i, j, dim, K)
+  local M;
+  
+  M := HomalgInitialIdentityMatrix( dim, K);
+  
+  SetMatElm(M, j, i, a);
+  
+  return M;
 end;
 
 vermat := function( dim, i, j, K)
@@ -199,35 +209,7 @@ normalize_column_Z := function (A)
       a := MatElm(matai, 1, 1);
 
       SetMatElm(U, 1, i+1, MatElm(matai, 1, 2));
-strictly_normalize_matrix := function (A)
-  local NZC, nr, nc, SF, SSF;
 
-  nr := NrRows(A);
-  nc := NrColumns(A);
-
-  SF := normalize_matrix(A);
-
-  if nr = 1 or nc = 1 then
-    return SF;
-  fi;
-
-  A := SF * A;
-
-  if nr < nc then
-    NZC := NonZeroColumns(A);
-
-    A := CertainColumns(A, NZC{[1..Minimum(Length(NZC),nr)]});
-  fi;
-  
-  A := Involution(A);
-  SSF := normalize_matrix(A);
-
-  if NrRows(SF) > NrRows(SSF) then
-    SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), HomalgRing(A))]);
-  fi;
-
-  return Involution(SSF) * SF;
-end;
       if i = 1 then 
         SetMatElm(U, 1, 1, MatElm(matai, 1, 1));
       fi;
@@ -263,77 +245,97 @@ end;
 #------------------------------------------------------------------------------
 
 normalize_matrix := function (A)
-  local Bi, PartialMatI, U, NZC, R; 
+   local i, j, B, c, s, si, Bi, Be, K, U, NZC; 
 
-  R := HomalgRing(A);
-  NZC := NonZeroColumns(A);
-  
-  if NZC = [] then
-    return HomalgIdentityMatrix(NrRows(A), R);
-  else
-    Bi := normalize_column(CertainColumns(A, [NZC[1]]));
-    
-    # new matrix
-    A := Bi * A;
-    # cut away top row
-    A := CertainRows(A,[2..NrRows(A)]);
-    
-    # normalize patrial matrix
-    PartialMatI := normalize_matrix(CertainColumns(A,NZC));
-    # expand to original size
-    PartialMatI := DiagMat([HomalgIdentityMatrix(1, R), PartialMatI]);
+   K := HomalgRing( A );
 
-    return PartialMatI * Bi;
-  fi;
+   U := HomalgInitialIdentityMatrix(NrRows(A), K);
+
+   if NrRows(A) = 0 then 
+      return A;
+   fi;
+
+   NZC := NonZeroColumns(A);
+   i := 1;
+
+   while not NZC = [] do
+     
+     Bi := normalize_column(CertainColumns(A, [NZC[1]]));
+     #Display("Bi");
+     #Display(Bi);
+     #Be := matrix_expand(Bi, NrRows(A), i, i);
+     Be := DiagMat([HomalgIdentityMatrix(i - 1, K), Bi]);
+
+     #Display("Be");
+     #Display(Be);
+
+     A := Bi * A;
+     U := Be * U;
+     
+     A := CertainRows(A,[2..NrRows(A)]);
+   
+     NZC := NonZeroColumns(A);
+     
+     i := i + 1;
+   od;
+
+   return U;
 end;
 
 #--------------------------------------------------------------------------------------------
 
-strictly_normalize_matrix_qq := function (A)
-  local NZC, nr, nc, SF, SSF;
+sindex := function(M)
+   local res, i,j;
+   res := [];
+   i := 1;
 
-  nr := NrRows(A);
-  nc := NrColumns(A);
+   for j in [1..NrColumns(M)] do
+      if i < NrRows(M) + 1 then
+        if not MatElm(M, i, j) = 0 then
+          Add(res, j);
+          i := i+1;
+        fi;
+      fi;
+   od;
 
-  SF := normalize_matrix(A);
-
-  if nr = 1 or nc = 1 then
-    return SF;
-  fi;
-
-  A := SF * A;
-
-  if nr < nc then
-    NZC := NonZeroColumns(A);
-
-    A := CertainColumns(A, NZC{[1..Minimum(Length(NZC),nr)]});
-  fi;
-  
-  A := Involution(A);
-  SSF := normalize_matrix(A);
-
-  if NrRows(SF) > NrRows(SSF) then
-    SSF := DiagMat([SSF,HomalgIdentityMatrix(NrRows(SF) - NrRows(SSF), HomalgRing(A))]);
-  fi;
-
-  return Involution(SSF) * SF;
+   return res;
 end;
 
 #--------------------------------------------------------------------------------------------
 
-strictly_normalize_matrix_zz := function (A)
-  local NZC, nr, nc, SF, SSF;
+strictly_normalize_matrix := function (A)
+   local i, j, k, si, U, u, a, b, R;
 
-  nr := NrRows(A);
-  nc := NrColumns(A);
+   R := HomalgRing( A );
+   
+   U := normalize_matrix(A);
 
-  SF := normalize_matrix(A);
+   A := U * A;
 
-  A := SF * A;
+   si := sindex(A);
 
-  NZC := NonZeroColumns(A);
+   
+   
+   i := 1;
+   
+   for j in si do
+     a := MatElm(A,i,j);
+     for k in [1..i-1] do
+       b := MatElm(A,k,j);
+       
+       if HasIsIntegersForHomalg(R) and IsIntegersForHomalg(R) then
+         u := addmatn(-QuoInt(b,a), i, k, NrRows(A), R);
+       else
+         u := addmatn(-b, i, k, NrRows(A), R);
+       fi;
 
-  return fail;
+       U := u * U;
+       A := u * A;
+     od;
+     i := i + 1;
+   od;
+
+   return U;
 end;
 
 
@@ -344,3 +346,6 @@ HomalgRandomMatrix := function(r,c,R)
 end;
 
 #r := 1;; c:= 4;; R := QQ;; mat := HomalgRandomMatrix(r,c,R);; Display(mat); U := normalize_matrix(mat);; Display(U); Display(U*mat);
+
+
+
