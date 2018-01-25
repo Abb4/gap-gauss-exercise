@@ -252,7 +252,7 @@ normalize_matrix := function (A)
    U := HomalgInitialIdentityMatrix(NrRows(A), K);
 
    if NrRows(A) = 0 then 
-      return A;
+      return HomalgInitialIdentityMatrix(NrRows(A), K);
    fi;
 
    NZC := NonZeroColumns(A);
@@ -313,8 +313,6 @@ strictly_normalize_matrix := function (A)
    A := U * A;
 
    si := sindex(A);
-
-   
    
    i := 1;
    
