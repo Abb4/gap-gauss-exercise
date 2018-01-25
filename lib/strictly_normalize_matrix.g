@@ -336,9 +336,30 @@ strictly_normalize_matrix := function (A)
    return U;
 end;
 
+#--------------------------------------------------------------------------------------------
+
+decide_zero_rows := function(B,A)
+  local C, R;
+
+  R := HomalgRing( A );
+
+  
+  C := UnionOfRows(B,A);
+  C := UnionOfColumns(CertainColumns(HomalgIdentityMatrix(NrRows(C), R), [1]), C);
+  C := UnionOfColumns(C, CertainColumns(HomalgIdentityMatrix(NrRows(C), R),[NrRows(C)]));
+  
+  E := strictly_normalize_matrix(C);
+
+  X := 
+  
+  return C;
+end;
 
 
 
+
+
+#--------------------------------------------------------------------------------------------
 HomalgRandomMatrix := function(r,c,R)
   return HomalgMatrix(RandomMat(r,c),r,c,R);
 end;
