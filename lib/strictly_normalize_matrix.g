@@ -339,22 +339,165 @@ end;
 #--------------------------------------------------------------------------------------------
 
 decide_zero_rows := function(B,A)
-  local C, R;
+  local r, rs, c, C, K, E, L, R, X;
 
-  R := HomalgRing( A );
+  K := HomalgRing( A );
+
+  r  := NrRows(A);
+  rs := NrRows(B);
+  c  := NrColumns(A);
+
+  Display(["r: ",r,"rs: ", rs, "c: ", c]);
+
+  E := HomalgIdentityMatrix(r, K);
 
   
   C := UnionOfRows(B,A);
-  C := UnionOfColumns(CertainColumns(HomalgIdentityMatrix(NrRows(C), R), [1]), C);
-  C := UnionOfColumns(C, CertainColumns(HomalgIdentityMatrix(NrRows(C), R),[NrRows(C)]));
   
-  E := strictly_normalize_matrix(C);
+  L := UnionOfRows(HomalgIdentityMatrix(rs, K), HomalgZeroMatrix(r,rs,K));
+  R := UnionOfRows(HomalgZeroMatrix(rs,r,K),HomalgIdentityMatrix(r, K));
+  
+  C := UnionOfColumns(L,C);
+  C := UnionOfColumns(C,R);
+  
+  Display("C:");
+  Display(C);
 
-  X := 
+  X := strictly_normalize_matrix(C);
   
-  return C;
+  Display("Xnorm:");
+  Display(X);  
+
+  X := CertainColumns(X, [(NrColumns(X) - r + 1)..NrColumns(X)]);
+  
+  Display("Xno columns:");
+  Display(X); 
+
+  X := CertainRows(X, [1..rs]);
+  
+  X := -X;  
+
+  Display("Xno rows:");
+  Display(X); 
+  
+  if X*A = B then
+     return true;
+  else
+     return false;
+  fi;
 end;
 
+#--------------------------------------------------------------------------------------------
+
+decide_zero_rows_effectively := function(B,A)
+  local r, rs, c, C, K, E, L, R, X, BS;
+
+  K := HomalgRing( A );
+
+  r  := NrRows(A);
+  rs := NrRows(B);
+  c  := NrColumns(A);
+
+  Display(["r: ",r,"rs: ", rs, "c: ", c]);
+
+  E := HomalgIdentityMatrix(r, K);
+
+  
+  C := UnionOfRows(B,A);
+  
+  L := UnionOfRows(HomalgIdentityMatrix(rs, K), HomalgZeroMatrix(r,rs,K));
+  R := UnionOfRows(HomalgZeroMatrix(rs,r,K),HomalgIdentityMatrix(r, K));
+  
+  C := UnionOfColumns(L,C);
+  C := UnionOfColumns(C,R);
+  
+  Display("C:");
+  Display(C);
+
+  X := strictly_normalize_matrix(C);
+  
+  Display("Xnorm:");
+  Display(X);  
+
+  X := CertainColumns(X, [(NrColumns(X) - r + 1)..NrColumns(X)]);
+  
+  Display("Xno columns:");
+  Display(X); 
+
+  X := CertainRows(X, [1..rs]);
+  
+  X := -X;  
+
+  Display("Xno rows:");
+  Display(X); 
+  
+  BS := B - X*A;
+
+  Display("BS");
+  Display(BS);
+  
+  if X*A = B then
+     return BS;
+  else
+     return fail;
+  fi;
+end;
+
+#--------------------------------------------------------------------------------------------
+
+syzygies_of_rows := function(A)
+  local r, rs, c, C, K, L, R, X, B, BS;
+
+  K := HomalgRing( A );
+
+  r  := NrRows(A);
+  c  := NrColumns(A);
+
+  B := HomalgZeroMatrix(1, c, K);
+
+  rs := NrRows(B);
+
+  Display(["r: ",r ,"c: ", c]);
+  
+  C := UnionOfRows(B,A);
+  
+  L := UnionOfRows(HomalgIdentityMatrix(rs, K), HomalgZeroMatrix(r,rs,K));
+  R := UnionOfRows(HomalgZeroMatrix(rs,r,K),HomalgIdentityMatrix(r, K));
+  
+  C := UnionOfColumns(L,C);
+  C := UnionOfColumns(C,R);
+  
+  Display("C:");
+  Display(C);
+
+  X := strictly_normalize_matrix(C);
+  
+  Display("Xnorm:");
+  Display(X);  
+
+  X := CertainColumns(X, [(NrColumns(X) - r + 1)..NrColumns(X)]);
+  
+  Display("Xno columns:");
+  Display(X); 
+
+  X := CertainRows(X, [1..rs]);
+  
+  X := -X;  
+
+  Display("Xno rows:");
+  Display(X); 
+  
+  BS := B - X*A;
+
+  Display("BS");
+  Display(BS);
+  
+  if X*A = B then
+     return BS;
+  else
+     return fail;
+  fi;
+end;
 
 
 
