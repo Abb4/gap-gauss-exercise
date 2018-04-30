@@ -480,23 +480,11 @@ syzygies_of_rows := function(A)
   Display("Xno columns:");
   Display(X); 
 
-  X := CertainRows(X, [1..rs]);
-  
-  X := -X;  
+  X := CertainRows(X, [(NrRows(X) - a + 1)..NrRows(X)]);
 
   Display("Xno rows:");
   Display(X); 
   
-  BS := B - X*A;
-
-  Display("BS");
-  Display(BS);
-  
-  if X*A = B then
-     return BS;
-  else
-     return fail;
-  fi;
 end;
 
 
