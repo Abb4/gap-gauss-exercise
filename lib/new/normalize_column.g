@@ -22,6 +22,4 @@ normalize_column := function(col)
     U := u * U;
     
   od;
-  
-
 end;
